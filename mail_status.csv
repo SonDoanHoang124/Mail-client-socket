@@ -1,1 +1,6 @@
-server_id,username,subject,status,attachments
+server_id,username,subject,status,filter,attachments
+1,abc@example.com,Test Email,unread,Important,true
+2,abc@example.com,Test Email,unread,Important,true
+3,abc@example.com,Test Email,unread,Important,true
+4,abc@example.com,Test Email,unread,Project,true
+5,abc@example.com,Testing console,unread,Important,false

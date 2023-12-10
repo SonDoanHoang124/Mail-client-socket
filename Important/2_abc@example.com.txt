@@ -1,0 +1,9 @@
+
+From: your_email@example.com
+Cc: <your_email@example.com> <abc@example.com> 
+Subject: Test Email
+
+
+This is a test email sent using a simple Python SMTP client.
+
+

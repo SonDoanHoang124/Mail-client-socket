@@ -1,0 +1,22 @@
+
+From: ntquan@testing.com
+To: <abc@example.com> 
+Subject: Testing console
+
+: <ntquan@testing.com>
+To: <abc@example.com> 
+Cc: 
+Bcc: 
+Subject: Testing console
+Message ID:<87da3406-7c41-4fb7-90e1-e147d634b566@testing.com>
+Date: Sun, 10-Dec-2023 20:55:30
+MIME-Version: 1.0
+Content-Language: EN
+
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: None
+
+avcasdasd!!!
+
+.
+

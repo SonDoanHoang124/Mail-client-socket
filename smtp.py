@@ -57,7 +57,9 @@ class SMTPClient:
         
         mime_boundary = self.generate_mime_boundary()
         mime_type, encoding = mimetypes.guess_type(msg)
-        mime_msg = f"""
+        
+        if attachments:
+            mime_msg = f"""
 From: <{from_addr}>
 {to_header}
 {cc_header}
@@ -75,7 +77,7 @@ Content-Transfer-Encoding: {encoding}
 
 {msg}\r\n
 """
-        if attachments:
+
             for attach in attachments:
                 mime_type, encoding = mimetypes.guess_type(attach['filename'])
                 mime_msg += f"""
@@ -85,15 +87,32 @@ Content-Disposition: attachment; filename="{attach['filename']}"
 Content-Transfer-Encoding: base64
 """
                 mime_msg += self.encode_file(attach['file_path'])
-        mime_msg += f"--{mime_boundary}\r\n."
-        return mime_msg
+            mime_msg += f"--{mime_boundary}"
+        else:
+            mime_msg = f"""
+From: <{from_addr}>
+{to_header}
+{cc_header}
+{bcc_header}
+Subject: {subject}
+{self.generate_msg_id(from_addr)}
+Date: {cur_time}
+MIME-Version: 1.0
+Content-Language: EN
+
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: {encoding}
+
+{msg}
+"""
+        return mime_msg + '\r\n.'
 
     def connect(self):
         self.socket.connect((self.server, self.port))
         self.receive_response()
 
     def send_command(self, command):
-        self.socket.send((command + '\n').encode())
+        self.socket.send((command + '\r\n').encode())
         self.receive_response()
 
     def receive_response(self):
@@ -103,7 +122,7 @@ Content-Transfer-Encoding: base64
     def login(self):
         self.send_command('EHLO example.com')
 
-    def send_mail(self, sender, to, cc, bcc, subject, body, attachments):
+    def send_mail(self, sender, to, cc, bcc, subject, body, attachments=None):
         recipients = []
         if cc:
             recipients.extend(cc)
@@ -116,24 +135,25 @@ Content-Transfer-Encoding: base64
             self.send_command(f'RCPT TO: <{recipient}>')
         self.send_command('DATA')
         self.send_command(f'{self.mime_format(subject, body, sender, to, cc, bcc, attachments)}')
-        self.send_command(f'QUIT')
+        self.send_command('QUIT')
 
     def close(self):
+        self.send_command('QUIT')
         self.socket.close()
 
-# Usage example
+"""# Usage example
 if __name__ == "__main__":
-    sender = "your_email@example.com"
+    sender = "teacher@testing.com"
     recipient = ["your_email@example.com", "abc@example.com"]
     subject = "Test Email"
-    body = "This is a test email sent using a simple Python SMTP client."
+    body = "This is the 3rd test email sent using a simple Python SMTP client."
     attachments = [
     {'filename': 'config.html', 'file_path': 'config.html'}
-    #,{'filename': 'B.txt', 'file_path': 'D:\Project\Computẻ Netwỏk\Project\socket Mail\B.txt'}
+    ,{'filename': 'B.txt', 'file_path': 'B.txt'}
     ,{'filename': 'socket Mail.zip', 'file_path': 'socket Mail.zip'}
 ]
 
     smtp_client = SMTPClient("127.0.0.1", 2500)
     smtp_client.login()
     smtp_client.send_mail(sender, [], recipient, [], subject, body, attachments)
-    smtp_client.close()
+    smtp_client.close()"""

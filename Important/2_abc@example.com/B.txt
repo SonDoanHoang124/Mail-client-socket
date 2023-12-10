@@ -1,0 +1,51 @@
+def parse_mime_email(email_content):
+    # Split the email content into parts based on boundary
+    boundary_match = re.search(r'Content-Type: multipart/mixed; boundary="([^"]+)"', email_content)
+    if not boundary_match:
+        print("Invalid MIME format: no boundary found.")
+        return None
+
+    boundary = boundary_match.group(1)
+    parts = re.split(r'--' + re.escape(boundary), email_content)
+
+    # Initialize headers
+    headers = {}
+    current_part = 0
+
+    # Extract headers from the first part
+    header_match = re.search(r'(From: .+?\r\n)(To: .+?\r\n)(Subject: .+?\r\n)(.+?)(\r\n\r\n)', parts[current_part], re.DOTALL)
+    if header_match:
+        headers['From'] = header_match.group(1).strip()
+        headers['To'] = header_match.group(2).strip()
+        headers['Subject'] = header_match.group(3).strip()
+
+    # Extract other headers
+    for part in parts[1:]:
+        current_part += 1
+        if 'Type: text/plain; charset="utf-8"' in part:
+            part = part.replace('Type: text/plain; charset="utf-8"', '')
+        header_match = re.search(r'(\w+: .+?\r\n)', part, re.DOTALL)
+        if header_match:
+            header = header_match.group(1)
+            key, value = header.split(': ', 1)
+            headers[key] = value.strip()
+
+    # Extract the message body (assuming it's plain text)
+    body_match = re.search(r'Content-Type: text/plain;.*?\r\n\r\n(.+)\r\n', parts[current_part], re.DOTALL)
+    if body_match:
+        body = body_match.group(1)
+    else:
+        print("No text/plain part found.")
+        body = None
+
+    # Extract attachments
+    attachments = []
+    for part in parts[current_part + 1:]:
+        attachment_match = re.search(r'Content-Disposition: attachment; filename="(.+)"\r\n\r\n(.+)\r\n', part, re.DOTALL)
+        if attachment_match:
+            filename, content = attachment_match.group(1), attachment_match.group(2)
+            attachments.append({'filename': filename, 'content': content})
+        else:
+            print("Attachment not properly formatted.")
+
+    return headers, body, attachments

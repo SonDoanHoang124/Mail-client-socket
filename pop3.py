@@ -26,8 +26,8 @@ class POP3Client:
         self.send_command(f'USER {username}')
         self.send_command(f'PASS {password}') # useless since password can be randomly typed
 
-    def list_emails(self):
-        self.socket.send('LIST\r\n'.encode())
+    def num_emails(self):
+        self.socket.send('STAT\r\n'.encode())
         return self.receive_response()
 
     def retrieve_email(self, email_number):
@@ -38,7 +38,7 @@ class POP3Client:
         self.send_command('QUIT')
         self.socket.close()
 
-# Usage example
+"""# Usage example
 if __name__ == "__main__":
     username = "abc@example.com"
     password = "your_password"
@@ -48,3 +48,4 @@ if __name__ == "__main__":
     pop3_client.list_emails()
     print(pop3_client.retrieve_email(13))
     pop3_client.close()
+"""
