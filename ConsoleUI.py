@@ -74,7 +74,7 @@ def receive_actions():
             get_mail.save_mail(username, email, filter, id)
             if get_mail.has_attachments(email):
                 get_mail.get_attachments(username, email, filter, id)
-            
+        utility.Download_mail.close()
         smtp.time.sleep(autoload)
 
 def show_mail():
